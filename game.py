@@ -1,5 +1,6 @@
 import pygame as pg
 from board import Board
+import sockets.network as network
 
 WIDTH = HEIGHT = 512
 COLS = ROWS = 8
@@ -10,6 +11,11 @@ class Game:
 
     def __init__(self):
         self.board = Board()
+        self.player = "white"
+        self.piece_choose = None
+
+    def set_piece_choose(self, piece):
+        self.piece_choose = piece
 
     def draw_game_state(self, screen, list_pieces):
         self.draw_board(screen)
@@ -46,8 +52,16 @@ class Game:
         player_clicks = []
         selected_piece = None
 
+        n = network.Network()
+        p = n.getP()
+        print(p)
+
         while running:
+            game = n.send("s")
+            self.board = game.board
             for e in pg.event.get():
+
+
                 if e.type == pg.QUIT:
                     running = False
                 elif e.type == pg.MOUSEBUTTONDOWN:
@@ -67,7 +81,13 @@ class Game:
                             player_clicks.append((x, y))
                         elif player_clicks[0] != (x, y) and selected_piece is not None:
                             if (y, x) in selected_piece.can_move(self.board):
+                                posCurrent = (selected_piece.coordinates_y, selected_piece.coordinates_x)
                                 self.board.move_piece_to(selected_piece, y, x)
+                                posCurrent_ = (y,x)
+                                msg = str(posCurrent[0])+","+str(posCurrent[1])+","+str(posCurrent_[0])+","+str(posCurrent_[1])
+                                print(msg)
+                                selected_piece = None
+                                self.board=n.send(msg).board
                                 player_clicks.clear()
 
             self.draw_game_state(SCREEN, self.board.list_pieces)
@@ -75,4 +95,6 @@ class Game:
                 self.draw_border_selected_piece(SCREEN, selected_piece.coordinates_y, selected_piece.coordinates_x)
                 if selected_piece.player_color == self.board.player_turn:
                     self.draw_list_possible_move(SCREEN, selected_piece)
+
             pg.display.flip()
+
