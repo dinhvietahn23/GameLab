@@ -28,14 +28,3 @@ class King(Piece):
                     list_possible_move.append((self.coordinates_x, self.coordinates_y - 2))
         return list_possible_move
 
-    def get_rook_already_use_in_corners(self, board):
-        list_rook = {
-            "rook_left": None,
-            "rook_right": None
-        }
-        rook_right = board.get_piece_at(self.coordinates_x, self.coordinates_y + 3)
-        rook_left = board.get_piece_at(self.coordinates_x, self.coordinates_y - 4)
-        if rook_right is not None and rook_right.is_first_move is True:
-            list_rook["rook_right"] = rook_right
-        if rook_left is not None and rook_left.is_first_move is True:
-            list_rook["rook_left"] = rook_left

@@ -5,6 +5,7 @@ class Pawn(Piece):
     def __init__(self, coordinates_x, coordinates_y, player_color):
         super(Pawn, self).__init__(coordinates_x, coordinates_y, player_color)
         self.name = "P"
+        self.init_coordinates_x = self.coordinates_x
 
     def can_move(self, board):
         return self.get_list_possible_move(board)
@@ -32,3 +33,7 @@ class Pawn(Piece):
                     list_possible_move.append((present_position[0] + ONE, present_position[1] + i))
 
         return list_possible_move
+
+    def can_promote_to_queen(self):
+        return True if self.coordinates_x - self.init_coordinates_x == 6 \
+                                   or self.coordinates_x - self.init_coordinates_x == -6 else False
